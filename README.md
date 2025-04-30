@@ -1,12 +1,19 @@
 This template is a “Learning Python Notebook” that allows you to build a Reinforcement Learning Trade AI that learns and determines trends with PPO (Proximal Policy Optimization) algorithm using real currency data acquired with MetaTrader 5.
+
 Based on technical indicators (SMA / RSI / MACD / OBV, etc.), the AI gradually learns the best strategy while selecting “buy/sell/hold”.
+
 ✅ Immediate validation with learned models 
+
 ✅ Real price-based profit/loss evaluation and asset curve visualization also available 
+
 ✅ Learning results can be reused and continue learning (with learned models) 
+
 ✅ Updates after purchase are free to re-download 
+
 Practical learning material for intermediate Python to AI interested traders This template is designed to be used in real trading situations.
 This template does not involve actual trading.
 Update】 2025/4/29 Ver1.0 released 
+
 ⚠ Notes 
 This template is for verification and learning. Actual trading is not performed.
 This template is not intended to make specific investment decisions or trading recommendations.
