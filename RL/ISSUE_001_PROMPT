@@ -1,0 +1,40 @@
+あなたは実装担当。以下 Issue 001 を実装せよ。
+
+# 制約（必須）
+- print禁止。loggingのみ。
+- Data Contractに反する“暗黙の補正”は禁止（ffill/bfill、naive tsの勝手なTZ付与など）。
+- 曖昧禁止：後続Issue（Loader/Resample）が迷わないように、定義を明確に書く。
+
+# Issue 001: Data Contract 文書化
+## 変更対象
+- docs/DATA_CONTRACT.md（新規）
+
+## 必須記載事項
+1) スキーマ（最小）
+- symbol, ts_utc, o, h, l, c, v, spread
+
+2) タイムゾーン規約
+- 入力tsはtz-aware必須（naiveはFAIL）
+- 内部基準はUTC（ts_utc）
+- JSTなどローカル時刻は派生列として扱う（内部基準を変えない）
+
+3) 欠損規約
+- ffill/bfill禁止
+- 欠損は「破棄」または「欠損フラグ化」。W1は破棄推奨。
+- ゼロvolumeは欠損と同一視しない（必要ならフラグ化）
+
+4) Resample定義
+- open=first, high=max, low=min, close=last, v=sum
+- spread（暫定）= mean
+- drop_incomplete=True の場合、末尾未完バーは必ず破棄
+
+5) 品質ゲート（最低条件）
+- ts_utc単調増加、重複禁止
+- 異常値（high<low、負volumeなど）禁止
+- 欠損率の報告とFail条件（暫定ルールでよい）
+
+6) 禁止事項一覧
+- ffill/bfill、naive ts、暗黙TZ変換、未来参照、テスト無し実装
+
+## DoD
+- この1ファイルだけで、W1–W2の実装前提が理解できる。
