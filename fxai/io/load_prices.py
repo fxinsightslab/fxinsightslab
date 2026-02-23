@@ -10,7 +10,6 @@ REQUIRED_COLUMNS = ("ts", "o", "h", "l", "c", "v", "spread")
 NUMERIC_COLUMNS = ("o", "h", "l", "c", "v", "spread")
 OUTPUT_COLUMNS = ("symbol", "ts_utc", "o", "h", "l", "c", "v", "spread")
 
-
 def _validate_required_columns(df: pd.DataFrame) -> None:
     missing_columns = [column for column in REQUIRED_COLUMNS if column not in df.columns]
     if missing_columns:
@@ -19,15 +18,24 @@ def _validate_required_columns(df: pd.DataFrame) -> None:
         logger.error(message)
         raise ValueError(message)
 
-
 def _parse_ts_to_utc(ts_series: pd.Series) -> pd.Series:
-    parsed_ts = pd.to_datetime(ts_series, errors="raise")
-    if parsed_ts.dt.tz is None:
+    """
+    Parse timestamp column to UTC-aware datetime64[ns, UTC].
+    
+    Uses pd.to_datetime(..., utc=True) to normalize mixed offsets (+09:00, +00:00, etc.)
+    to UTC. Raises ValueError if any timestamp is naive (tz-unaware).
+    """
+    parsed_ts = pd.to_datetime(ts_series, errors="raise", utc=True)
+    
+    # Check if the original input had tz info by re-parsing without utc=True
+    # to detect naive timestamps
+    check_ts = pd.to_datetime(ts_series, errors="raise")
+    if check_ts.dt.tz is None:
         message = "timestamp must be tz-aware: found naive ts"
         logger.error(message)
         raise ValueError(message)
-    return parsed_ts.dt.tz_convert("UTC")
-
+    
+    return parsed_ts
 
 def _coerce_numeric_columns(df: pd.DataFrame) -> pd.DataFrame:
     converted = df.copy()
@@ -40,7 +48,6 @@ def _coerce_numeric_columns(df: pd.DataFrame) -> pd.DataFrame:
             raise ValueError(message) from exc
     return converted
 
-
 def load_prices_csv(path: str | Path, symbol: str) -> pd.DataFrame:
     df = pd.read_csv(path)
     _validate_required_columns(df)
@@ -50,7 +57,7 @@ def load_prices_csv(path: str | Path, symbol: str) -> pd.DataFrame:
     df = df.sort_values("ts_utc", kind="mergesort").reset_index(drop=True)
 
     if df["ts_utc"].duplicated().any():
-        message = "duplicate ts_utc detected"
+        message = "duplicate ts_utc"
         logger.error(message)
         raise ValueError(message)
 
