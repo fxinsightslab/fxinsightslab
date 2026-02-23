@@ -1,0 +1,4 @@
+features:
+  return_window: 1
+  vol_window: 12
+  z_window: 20
