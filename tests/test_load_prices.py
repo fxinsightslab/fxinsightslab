@@ -12,7 +12,7 @@ FIXTURE_DIR = Path("tests/fixtures")
 def test_load_prices_csv_success_creates_utc_and_columns() -> None:
     df = load_prices_csv(FIXTURE_DIR / "load_prices_valid.csv", symbol="USDJPY")
 
-    assert list(df.columns) == ["symbol", "ts_utc", "o", "h", "l", "c", "v", "spread"]
+    assert list(df.columns) == ["symbol", "ts_utc", "o", "h", "l", "c", "v", "spread", "session"]
     assert (df["symbol"] == "USDJPY").all()
     assert str(df["ts_utc"].dt.tz) == "UTC"
     assert df["ts_utc"].is_monotonic_increasing

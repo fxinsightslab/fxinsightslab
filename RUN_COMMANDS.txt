@@ -1,0 +1,5 @@
+python -m pytest -q
+python -m fxai.cli ingest --input tests/fixtures/m1_10rows.csv --symbol USDJPY --timeframe M1 --out data/raw/
+python -m fxai.cli resample --input data/raw/ --symbol USDJPY --timeframe M1 --out data/bars/ --rules M5,H1,H4
+python -m fxai.cli features --input data/bars/ --symbol USDJPY --rule M5 --out data/features/
+python -m fxai.cli label --input data/features/ --symbol USDJPY --rule M5 --out data/labels/ --k_up 2.0 --k_dn 2.0 --n_bars 24
